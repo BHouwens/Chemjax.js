@@ -47,21 +47,11 @@
 		return str;
 	}
 
-	/** 
-		Convert the word infinity into a rendering 
-		double-o (this is a maths thing, but helpful overall) 
-	**/
-	convertInfinity = function(str){
-		str = str.replace(/infinity/g, 'oo');
-
-		return str;
-	}
-
 	/** Chemical Compounds **/
 	filterAsChemCompound = function(str){
 
 		/* Regex excludes logs */
-		var chems = str.match(/(?!log)([a-z])+[0-9]+/gi);
+		var chems = str.match(/\b(?:(?!\blog[0-9]+\b)[a-z])+[0-9]+\b/gi);
 
 		if (chems){
 			for (var i = 0; i < chems.length; i++){
