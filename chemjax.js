@@ -47,26 +47,62 @@
 		return str;
 	}
 
-	/** Chemical Compounds **/
-	filterAsChemCompound = function(str){
+	/** Automatically subscript for chemical compounds **/
+	filterForChemSubscripts = function(str){
 
 		/* Regex excludes logs */
-		var chems = str.match(/\b(?:(?!\blog[0-9]+\b)[a-z])+[0-9]+\b/gi);
+		var chems = str.match(/[a-z]+[0-9]+/gi);
 
 		if (chems){
 			for (var i = 0; i < chems.length; i++){
 
-			  /* If a number follows a letter, prefix it with an underscore */
+			  /* If a number follows a letter, prefix it with an underscore and suffix it with a space */
 		  	  var elem = chems[i],
-		      	  firstDigit = elem.match(/\d/),
-		          index = elem.indexOf(firstDigit),
-		      	  splicedString = elem.splice(index, '_');
-	  
+		      	  firstDigit = elem.match(/[0-9]/),
+		          firstIndex = elem.indexOf(firstDigit),
+		      	  splicedString = elem.splice(firstIndex, '_');
+	  		  
 	  		  str = str.replace(elem, splicedString);
 
 			}
 		}
 
 		return str;
+	}
+
+	/** Ensure valid chemistry superscripts work **/
+	filterForChemSuperscripts = function(str){
+		var chems = str.match(/[a-z]+[_0-9]*\^[-0-9]+/gi);
+
+		if (chems){
+			for (var i = 0; i < chems.length; i++){
+				var elem = chems[i],
+					caretIndex = elem.indexOf('^'),
+					splicedString = elem.splice(caretIndex+1, '(');
+
+				splicedString += ')';
+				str = str.replace(elem, splicedString);
+			}
+		}
+
+		return str;
+	}
+
+	/** Convert two-way chemical arrows to the correct display **/
+	filterTwoWayArrows = function(str){
+		str = str.replace('<=>', '⇌');
+
+		return str;
+	}
+
+	/** Returns a string filtered thoroughly as a chemical equation **/
+	String.prototype.filterForChemistry = function(){
+		var self = this;
+
+		self = filterTwoWayArrows(self);
+		self = filterForChemSubscripts(self);
+		self = filterForChemSuperscripts(self);
+
+		return self;
 	}
 })();
